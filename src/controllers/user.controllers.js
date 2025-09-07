@@ -163,8 +163,8 @@ const logoutUser = asyncHandler(async (req, res) => {
     await User.findByIdAndUpdate(
         req.user._id,
         {
-            $set: {
-                refreshToken: undefined
+            $unset: {
+                refreshToken: 1
             }
         },
         {
@@ -296,12 +296,14 @@ const updateAvatar = asyncHandler(async (req, res) => {
     const user = await User.findByIdAndUpdate(
         req.user?._id,
         {
-            $set: avatar.url
+            $set: {
+                avatar: avatar.url
+            }
         },
         {new: true}
     ).select("-password")
 
-    return req.status(200)
+    return res.status(200)
     .json(
         new ApiResponse(200, user, "Avatar updated successfully!")
     )
@@ -322,19 +324,21 @@ const updateCoverImage = asyncHandler(async (req, res) => {
     const user = await User.findByIdAndUpdate(
         req.user?._id,
         {
-            $set: coverImage.url
+            $set: {
+                coverImage: coverImage.url
+            }
         },
         {new: true}
     ).select("-password")
 
-    return req.status(200)
+    return res.status(200)
     .json(
         new ApiResponse(200, user, "Cover Image updated successfully!")
     )
 })
 
 const getUserChannelProfile = asyncHandler(async (req,res) => {
-    const {username} = req.params;
+    const {username} = req.query;
 
     if(!username?.trim()){
         throw new ApiError(401, "Username is missing!")
@@ -372,7 +376,7 @@ const getUserChannelProfile = asyncHandler(async (req,res) => {
                 },
                 isSubscribed: {
                     $cond: {
-                        if: {$in: [req.user?._id, "$subscribers.subscriber"]},
+                        if: {$in: [new mongoose.Types.ObjectId(req.user?._id), "$subscribers.subscriber"]},
                         then: true,
                         else: false
                     }
