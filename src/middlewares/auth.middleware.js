@@ -22,10 +22,6 @@ export const verifyJWT = asyncHandler(async(req, res, next) => {
         req.user = user;
         next()
     } catch (error) {
-        console.error("JWT Verification Error:");
-        console.error("Message:", error.message);
-        console.error("Stack:", error.stack);
-        console.error("Token Received:", req.cookies?.accessToken || req.header("Authorization"));
         throw new ApiError(401, error?.message || "Invalid Access token")
     }
 })
