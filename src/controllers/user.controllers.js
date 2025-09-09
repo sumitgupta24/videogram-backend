@@ -28,7 +28,6 @@ const registerUser = asyncHandler(async (req,res) => {
 
     console.log("email:", email);
 
-    // Check if required fields are missing
     if (!fullName || !email || !password) {
         return res.status(400).json({ 
             success: false, 
@@ -36,7 +35,6 @@ const registerUser = asyncHandler(async (req,res) => {
         });
     }
 
-    // Check if any field is empty string
     if ([fullName, email, username, password].some((field) => field?.trim() === "")) {
         throw new ApiError(400, "All fields are required");
     }
