@@ -10,9 +10,37 @@ import { Video } from "../models/video.model.js";
 const getAllVideos = asyncHandler(async (req, res) => {
     const { page = 1, limit = 10, query, sortBy, sortType, userId } = req.query
 
-    if(!userId || (mongoose.Types.ObjectId.isValid(userId.toString()))){
+    if(!userId || !(mongoose.Types.ObjectId.isValid(userId.toString()))){
         throw new ApiError(404, "User not found")
     }
+
+    const pipeline = [
+        {
+            $match: query ? { title: { $regex: query, $options: "i" } } : {}
+        },
+        {
+            $sort: {
+                [sortBy || "createdAt"]: sortType === "asc" ? 1 : -1
+            }
+        }
+    ]
+
+    const aggregate = Video.aggregate(pipeline)
+
+
+    const videos = await Video.aggregatePaginate(aggregate, {
+        limit: Number(limit),
+        page: Number(page)
+    })
+
+    if(!videos){
+        throw new ApiError(404, "Videos couldn't be fetched!")
+    }
+
+    return res.status(200)
+    .json(
+        new ApiResponse(200, videos, "Videos fetched successfully!")
+    )
 })
 
 const publishAVideo = asyncHandler(async (req, res) => {

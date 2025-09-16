@@ -18,7 +18,6 @@ router.route("/upload-video").post(
         }
     ]),verifyJWT,publishAVideo
 )
-
 router.route("/get-video/:videoId").get(verifyJWT, getVideoById)
 router.route("/update-video/:videoId").patch(verifyJWT, updateVideoDetails)
 router.route("/delete-video/:videoId").delete(verifyJWT, deleteVideo)
