@@ -17,12 +17,12 @@ const registerUser = asyncHandler(async (req,res) => {
     // check for user creation
     // return response
 
-    if (!req.body) {
-        return res.status(400).json({ 
-            success: false, 
-            message: "Request body is required" 
-        });
-    }
+    // if (!req.body) {
+    //     return res.status(400).json({ 
+    //         success: false, 
+    //         message: "Request body is required" 
+    //     });
+    // }
 
     const { fullName, email, username, password } = req.body;
 
@@ -78,7 +78,7 @@ const registerUser = asyncHandler(async (req,res) => {
 
     const createdUser = await User.findById(user._id).select(
         "-password -refreshToken"
-    )
+    )   
 
     if(!createdUser){
         throw new ApiError(500, "Something went wrong while registering a user")
